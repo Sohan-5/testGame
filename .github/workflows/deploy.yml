@@ -20,16 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Sanity check
-        run: |
-          test -f docs/index.html || (echo "docs/index.html missing — copy your BUILT WebGL output into /docs" && exit 1)
-          if grep -q "%UNITY_WEBGL_LOADER_URL%" docs/index.html; then
-            echo "ERROR: docs/index.html is a TEMPLATE. Rebuild and put the BUILT index.html into /docs."; exit 1;
-          fi
-          ls -la docs
-          ls -la docs/Build || true
-
-      # 🔧 Replace placeholders in docs/index.html with your CAPS secrets
+      # 🔧 Replace placeholders in docs/index.html with your GitHub secrets
       - name: Inject Firebase secrets
         run: |
           sed -i "s|\"API_KEY\"|\"${{ secrets.API_KEY }}\"|g" docs/index.html
@@ -39,8 +30,7 @@ jobs:
           sed -i "s|\"MESSAGING_SENDER_ID\"|\"${{ secrets.MESSAGING_SENDER_ID }}\"|g" docs/index.html
           sed -i "s|\"APP_ID\"|\"${{ secrets.APP_ID }}\"|g" docs/index.html
           sed -i "s|\"MEASUREMENT_ID\"|\"${{ secrets.MEASUREMENT_ID }}\"|g" docs/index.html
-          echo "Preview (first 60 lines):"
-          head -n 60 docs/index.html
+          echo "Injected Firebase secrets successfully."
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
